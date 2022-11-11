@@ -9,13 +9,7 @@ class UserRepository{
         return await userModel.find({});
     }
     async addUser(data){
-        let user ={};
-        try {
-            user = await userModel.create(data);
-        } catch (error) {
-            user =error;
-        }
-        return user;
+       return await userModel.create(data);
     }
 
     async addUserold(data){
@@ -68,8 +62,7 @@ class UserRepository{
                     {
                         email:data.username
                     }
-                ] ,
-                password:data.password
+                ] 
             });
     }
 

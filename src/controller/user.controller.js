@@ -15,7 +15,13 @@ class UserController {
         userRepository.addUser(body).then(output => {
             res.send(output);
         }).catch(err => {
-            res.send(err);
+            // console.log(err);
+            // res.status(400).json(err);
+            if(err && err.code && err.code =='11000'){
+                res.status(400).json({message:"Email or Mobile number is already exist"});
+            }else{
+                res.status(400).json({message:"Email and Mobile number is required",err});
+            }
         });
     }
 
@@ -53,11 +59,20 @@ class UserController {
     }
     login(req, res) {
         let loginData = req.body;
-        userRepository.login(loginData).then(output => {
-            if (output) {
-                res.send(true);
+        userRepository.login(loginData).then(user => {
+            if (user) {
+                if(user.password === loginData.password){
+                    if(user.status=="Active"){
+                        res.send(true);
+                    }else{
+                        res.status(400).json({message:"User is disabled, please contact admin"});
+                    }
+                }else{
+                    res.status(400).json({message:"Username or password is incorrect"});
+                }
+                
             } else {
-                res.send(false);
+                res.status(400).json({message:"User is not exist in system, please contact admin"});
             }
         });
     }
@@ -71,6 +86,9 @@ class UserController {
             userRepository.findUser(email.trim()).then(user => {
 
                 let userId = user._id;
+                resetPasswordRepository.storeOtp(otp, userId).then(otpdata => {
+                    console.log("Otp stored in DB", otpdata);
+                });
                 //store tmp password and user id for further verification
 
                 let sub = "Forgot Password | Milk Management";
@@ -85,14 +103,14 @@ class UserController {
                 Arati @ Developer from Pune.</i>`;
                 userRepository.sendEmail(email, sub, emailBody).then(info => {
 
-                    let sendResponse = { id: info.messageId,message:"Password Reset Success."};
+                    let sendResponse = { id: info.messageId, message: "Email sent successfully." };
                     res.send(sendResponse);
                 }).catch(err => {
-                    res.send({ err,message:"Password Reset Failed."})
+                    res.status(400).json({ err, message: "Email Failed." })
                 });
 
             }).catch(err => {
-                res.send({ err,message:"User not exist in system."})
+                res.status(400).json({ err, message: "email is not associated with any account in system." })
             });
         }
     }
@@ -101,27 +119,35 @@ class UserController {
         let sub = req.body.subject;
         let body = req.body.body;
         userRepository.sendEmail(to, sub, body).then(info => {
-            let sendResponse = { id: info.messageId,message:"Password Reset Success."};
+            let sendResponse = { id: info.messageId, message: "Password Reset Success." };
             res.send(sendResponse);
         }).catch(err => {
-            res.send({ err,message:"Password Reset Failed."})
+            res.send({ err, message: "Password Reset Failed." })
         });
     }
 
-    resetPwd(req,res){
+    resetPwd(req, res) {
         let resetData = req.body;
-        userRepository.findUser(resetData.email).then(user=>{
-            let userId = user._id;           
-        resetPasswordRepository.findResetUser(userId).then(resetUser=>{
-            if(resetUser.otp===resetData.otp){
-                user.password = resetData.otp;
-                user.save().then(updatedUser=>{
-                    res.send({updatedUser,message:"Password Reset Success"});
-                }).catch(err=>{
-                    res.send({err,message:"Password Reset Failed."});
-                });
+        userRepository.findUser(resetData.email).then(user => {
+            if(!user){
+                return res.status(200).json({message: "User is not exist" }).end;
             }
-        });
+            let userId = user._id;
+            resetPasswordRepository.findOtp(userId).then(resetUser => {
+                if (resetUser && resetUser.otp === resetData.otp) {
+                    user.password = resetData.password;
+                    user.save().then(updatedUser => {
+                        resetPasswordRepository.deleteOtp(resetUser._id).then(deletedOtp => {
+                            res.send({ updatedUser, message: "Password Reset Success" });
+                        });
+
+                    }).catch(err => {
+                        res.send({ err, message: "Password Reset Failed." });
+                    });
+                }else {
+                    res.status(410).json({message: "OTP Already used or expired" });
+                }
+            });
         });
     }
 }

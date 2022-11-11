@@ -15,7 +15,6 @@ module.exports = mongoose.model('userr', new mongoose.Schema(
             unique:true
         },
         password: "string",
-        cnfPass: "string",
         createdDate: 'date',
         updatedDate: 'date'
     },
