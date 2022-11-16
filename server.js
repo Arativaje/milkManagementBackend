@@ -5,29 +5,14 @@ const cors = require('cors');
 app.use(cors());
 const db=require('./src/config/dbconfig');
 
-
-const milkController = require('./src/controller/milk.controller');
-const userController = require('./src/controller/user.controller');
 const bookController = require('./src/controller/book.controller');
 const billController = require('./src/controller/bill.controller');
 const marriageController = require('./src/controller/marriage.controller');
-const typeController = require('./src/controller/type.controller');
 
-app.post('/milk',milkController.addMilk);
-app.get('/milk',milkController.getMilk);
-app.put('/milk',milkController.updateMilk);
-app.delete('/milk/:id',milkController.removeMilk);
-app.get('/milk/:id',milkController.getMilkDetailById);
-
-app.put('/updateRate',milkController.updateMilkRate);
-
-app.get('/type',typeController.getType);
-app.get('/type/:id',typeController.getTypeById);
-app.post('/type',typeController.addType);
-app.put('/type/:id',typeController.updateType);
-app.delete('/type/:id',typeController.deleteType);
-
-// app.delete('/milk/type/:ty',milkController.removeMilkByType);
+const userRouter = require('./src/routes/user.routes');
+const milkRouter = require('./src/routes/milk.routes');
+const typeRouter = require('./src/routes/type.routes');
+const flatRouter = require('./src/routes/flat.routes');
 
 app.get('/book',bookController.getBook);
 app.post('/book',bookController.addBook);
@@ -44,15 +29,11 @@ app.post('/marriage',marriageController.addMarriage);
 app.put('/marriage/:id',marriageController.updateMarriage);
 app.delete('/marriage/:id',marriageController.deleteMarriage);
 
-app.get('/user',userController.getUser);
-app.get('/user/:id',userController.getUserById);
-app.post('/user',userController.addUser);
-app.put('/user/:id',userController.updateUser);
-app.delete('/user/:id',userController.removeUser);
-app.post('/login',userController.login);
-app.post('/forgot',userController.forgot);
-app.post('/sendEmail',userController.sendEmail);
-app.post('/resetPwd',userController.resetPwd);
+app.use(userRouter);
+app.use(milkRouter);
+app.use(typeRouter);
+app.use(flatRouter);
+
 
 // (req,res)=>{
 //     let id = req.params.id;
