@@ -13,6 +13,7 @@ const userRouter = require('./src/routes/user.routes');
 const milkRouter = require('./src/routes/milk.routes');
 const typeRouter = require('./src/routes/type.routes');
 const flatRouter = require('./src/routes/flat.routes');
+const societyRouter = require('./src/routes/society.routes');
 
 app.get('/book',bookController.getBook);
 app.post('/book',bookController.addBook);
@@ -33,6 +34,7 @@ app.use(userRouter);
 app.use(milkRouter);
 app.use(typeRouter);
 app.use(flatRouter);
+app.use(societyRouter);
 
 
 // (req,res)=>{

@@ -21,6 +21,16 @@ class flatRepository{
         return await flatModel.deleteOne({_id:id});
     }
 
+    async updateFlat(id,newFlat){
+        return await flatModel.updateOne({_id:id},newFlat);
+
+    }
+
+    async getFlatById(id){
+        return await flatModel.findOne({_id:id});
+    }
+
+
 }
 
 module.exports = new flatRepository();
