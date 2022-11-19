@@ -17,6 +17,10 @@ module.exports = mongoose.model('flat', new mongoose.Schema(
             type:Number,
             required:true
         },
+        societyId: {
+            type:String,
+            required:true
+        },
         altNumber: Number
     }
 ));
