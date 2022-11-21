@@ -34,6 +34,12 @@ class societyController{
         });
 
     }
+    getSocietyFlats(req,res){
+        let societyId =req.params.id;
+        societyRepository.getSocietyFlats(societyId).then(flats=>{
+            res.send(flats);
+        })
+    }
 
 }
 

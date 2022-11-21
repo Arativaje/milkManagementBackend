@@ -7,6 +7,7 @@ societyRouter.post('/society',societyController.addSociety);
 societyRouter.put('/society/:id',societyController.updateSociety);
 societyRouter.delete('/society/:id',societyController.deleteSociety);
 societyRouter.get('/society/:id',societyController.getSocietyById);
+societyRouter.get('/society/:id/flats',societyController.getSocietyFlats);
 
 module.exports = societyRouter;
 

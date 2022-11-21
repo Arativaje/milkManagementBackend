@@ -1,4 +1,5 @@
 const logger = require('../logger/logger');
+const flatModel = require('../model/flat.model');
 const societyModel = require('../model/society.model');
 
 class societyRepository{
@@ -17,6 +18,10 @@ class societyRepository{
     }
     async getSocietyById(id){
         return await societyModel.findOne({_id:id});
+    }
+
+    async getSocietyFlats(societyId){
+        return await flatModel.find({societyId:societyId});
     }
 
 }
